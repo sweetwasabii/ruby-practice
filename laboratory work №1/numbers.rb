@@ -7,7 +7,7 @@ def task2_1
   print "Sum of digits: #{sum_digits(number)}"
 end
 
-def sum_digits(number)
+def sum_digits(number: Integer)
   sum = 0
 
   while number != 0 do
@@ -23,7 +23,7 @@ end
 Реализовать методы поиска максимальной и минимальной цифры числа, произведения цифр числа.
 =end
 
-def max_digit(number)
+def max_digit(number: Integer)
   max = 0
 
   begin
@@ -35,7 +35,7 @@ def max_digit(number)
   return max
 end
 
-def min_digit(number)
+def min_digit(number: Integer)
   min = 9
 
   begin
@@ -47,7 +47,7 @@ def min_digit(number)
   return min
 end
 
-def mult_digits(number)
+def mult_digits(number: Integer)
   mult = 1
 
   begin
@@ -71,7 +71,7 @@ end
 и не взаимно простых с произведением цифр числа.
 =end
 
-def task2_3_1(number)
+def task2_3_1(number: Integer)
   dividers = 0
 
   if number != 0
@@ -93,7 +93,7 @@ def task2_3_1(number)
   return dividers
 end
 
-def task2_3_2(number)
+def task2_3_2(number: Integer)
   if number == 0
     raise ArgumentError, "The number can't be 0."
   end
@@ -121,7 +121,7 @@ def task2_3_2(number)
   return min_odd_digit
 end
 
-def task2_3_3(number)
+def task2_3_3(number: Integer)
   sum = sum_digits(number)
   mult = mult_digits(number)
 
@@ -148,11 +148,11 @@ def task2_3_3(number)
   return result
 end
 
-def are_coprime(a, b)
+def are_coprime(a: Integer, b: Integer)
   return find_GCD(a, b) == 1
 end
 
-def find_GCD(a, b)
+def find_GCD(a: Integer, b: Integer)
   if a == 0 or b == 0
     raise ArgumentError, "One of the numbers is 0."
   end
@@ -164,5 +164,64 @@ def find_GCD(a, b)
   return a
 end
 
-puts task2_3_1(16)
-puts task2_3_3(32)
+=begin
+№3 Списки
+
+1. Написать методы, которые находят минимальный, максимальный элементы,
+сумму и произведение элементов. Каждая операция в отдельном методе.
+Решить задачу с помощью циклов.
+
+2. Написать программу, которая принимает как аргумент два значения.
+Первое значение говорит, какой из методов задачи 1 выполнить,
+второй говорит о том, откуда читать список, с клавиатуры, или из файла.
+Если из файла, то третьим аргументом должен быть написан адрес файла.
+Далее необходимо прочитать массив и выполнить метод.
+=end
+
+def min_of_array(array: Array)
+  if array.size == 0
+    raise ArgumentError, "Array size is 0."
+  end
+
+  min = array[0]
+  array.each { |item|
+    if item < min
+      min = item
+    end
+  }
+end
+
+def max_of_array(array: Array)
+  if array.size == 0
+    raise ArgumentError, "Array size is 0."
+  end
+
+  max = array[0]
+  array.each { |item|
+    if item < max
+      max = item
+    end
+  }
+end
+
+def sum_of_array(array: Array)
+  if array.size == 0
+    raise ArgumentError, "Array size is 0."
+  end
+
+  sum = 0
+  array.each { |item|
+    sum += item
+  }
+end
+
+def mult_of_array(array)
+  if array.size == 0
+    raise ArgumentError, "Array size is 0."
+  end
+
+  mult = 1
+  array.each { |item|
+    sum *= item
+  }
+end

@@ -7,7 +7,7 @@ def task2_1
   print "Sum of digits: #{sum_digits(number)}"
 end
 
-def sum_digits(number: Integer)
+def sum_digits(number)
   sum = 0
 
   while number != 0 do
@@ -18,12 +18,14 @@ def sum_digits(number: Integer)
   return sum
 end
 
+# task2_1
+
 =begin
 №2_2 Вынести нахождение суммы цифр числа в отдельный метод.
 Реализовать методы поиска максимальной и минимальной цифры числа, произведения цифр числа.
 =end
 
-def max_digit(number: Integer)
+def max_digit(number)
   max = 0
 
   begin
@@ -35,7 +37,9 @@ def max_digit(number: Integer)
   return max
 end
 
-def min_digit(number: Integer)
+# puts max_digit(5823)
+
+def min_digit(number)
   min = 9
 
   begin
@@ -47,7 +51,9 @@ def min_digit(number: Integer)
   return min
 end
 
-def mult_digits(number: Integer)
+# puts min_digit(5823)
+
+def mult_digits(number)
   mult = 1
 
   begin
@@ -57,6 +63,8 @@ def mult_digits(number: Integer)
 
   return mult
 end
+
+# puts mult_digits(5823)
 
 =begin
 №2_3 Составить 3 метода для работы с цифрами или делителей числа на основании варианта.
@@ -71,7 +79,7 @@ end
 и не взаимно простых с произведением цифр числа.
 =end
 
-def task2_3_1(number: Integer)
+def task2_3_1(number)
   dividers = 0
 
   if number != 0
@@ -93,7 +101,9 @@ def task2_3_1(number: Integer)
   return dividers
 end
 
-def task2_3_2(number: Integer)
+# puts task2_3_1(33)
+
+def task2_3_2(number)
   if number == 0
     raise ArgumentError, "The number can't be 0."
   end
@@ -121,7 +131,35 @@ def task2_3_2(number: Integer)
   return min_odd_digit
 end
 
-def task2_3_3(number: Integer)
+# puts task2_3_2(5823)
+# puts task2_3_2(0)
+# puts task2_3_2(22)
+
+def find_GCD(a, b)
+  if a == 0 or b == 0
+    raise ArgumentError, "One of the numbers is 0."
+  end
+
+  while a != b
+    (a > b)? a -= b: b -= a
+  end
+
+  return a
+end
+
+# puts find_GCD(10, 25)
+# puts find_GCD(10, 0)
+# puts find_GCD(11, 27)
+
+def are_coprime(a, b)
+  return find_GCD(a, b) == 1
+end
+
+# puts are_coprime(10, 25)
+# puts are_coprime(10, 0)
+# puts are_coprime(11, 27)
+
+def task2_3_3(number)
   sum = sum_digits(number)
   mult = mult_digits(number)
 
@@ -148,21 +186,10 @@ def task2_3_3(number: Integer)
   return result
 end
 
-def are_coprime(a: Integer, b: Integer)
-  return find_GCD(a, b) == 1
-end
-
-def find_GCD(a: Integer, b: Integer)
-  if a == 0 or b == 0
-    raise ArgumentError, "One of the numbers is 0."
-  end
-
-  while a != b
-    (a > b)? a -= b: b -= a
-  end
-
-  return a
-end
+# puts task2_3_3(52)
+# sum = 7 mult = 10
+# 1 2 26 4 13 52
+# 2 + 4 + 26 + 52 = 84
 
 =begin
 №3 Списки
@@ -178,50 +205,129 @@ end
 Далее необходимо прочитать массив и выполнить метод.
 =end
 
-def min_of_array(array: Array)
-  if array.size == 0
+def get_list_min(*list)
+  if list.size == 0
     raise ArgumentError, "Array size is 0."
   end
 
-  min = array[0]
-  array.each { |item|
-    if item < min
-      min = item
+  min = list[0]
+  list.each { |element|
+    if element < min
+      min = element
     end
   }
+
+  return min
 end
 
-def max_of_array(array: Array)
-  if array.size == 0
+# puts get_list_min(5, 2, 8, 3)
+# puts get_list_min()
+
+def get_list_max(*list)
+  if list.size == 0
     raise ArgumentError, "Array size is 0."
   end
 
-  max = array[0]
-  array.each { |item|
-    if item < max
-      max = item
+  max = list[0]
+  list.each { |element|
+    if element > max
+      max = element
     end
   }
+
+  return max
 end
 
-def sum_of_array(array: Array)
-  if array.size == 0
+# puts get_list_max(5, 2, 8, 3)
+# puts get_list_max()
+
+def get_list_sum(*list)
+  if list.size == 0
     raise ArgumentError, "Array size is 0."
   end
 
   sum = 0
-  array.each { |item|
-    sum += item
+  list.collect { |element|
+    sum += element
   }
+
+  return sum
 end
 
-def mult_of_array(array)
-  if array.size == 0
+# puts get_list_sum(5, 2, 8, 3)
+# puts get_list_sum()
+
+def get_list_mult(*list)
+  if list.size == 0
     raise ArgumentError, "Array size is 0."
   end
 
   mult = 1
-  array.each { |item|
-    sum *= item
+  list.collect { |element|
+    mult *= element
   }
+
+  return mult
 end
+
+# puts get_list_mult(5, 2, 8, 3)
+# puts get_list_mult()
+
+def read_file_list(file_name)
+  file = File.new(file_name, "r:UTF-8")
+  content = file.read
+
+  list = []
+  content.split.each { |element|
+    list.push element.to_i
+  }
+
+  return list
+end
+
+# puts read_file_list("list.txt")
+
+def read_keyboard_list
+  list = []
+  gets.chomp.split.each { |element|
+    list.push element.to_i
+  }
+
+  return list
+end
+
+# puts read_keyboard_list
+
+def task3_2(read_from_keyboard, method_number, *file_name)
+  if read_from_keyboard
+    print("Input list: ")
+    list = read_keyboard_list
+  else
+    list = read_file_list(file_name.first)
+  end
+
+  method_result = case method_number
+  when 1
+    get_list_min(*list)
+  when 2
+    get_list_max(*list)
+  when 3
+    get_list_sum(*list)
+  when 4
+    get_list_mult(*list)
+  else
+    raise ArgumentError, "The method number must be in the range [1, 4]."
+           end
+
+  puts "Method's result: " + method_result.to_s
+end
+
+# task3_2(true, 1)
+# task3_2(true, 2)
+# task3_2(true, 3)
+# task3_2(true, 4)
+
+# task3_2(false, 1, "list.txt")
+# task3_2(false, 2, "list.txt")
+# task3_2(false, 3, "list.txt")
+# task3_2(false, 4, "list.txt")

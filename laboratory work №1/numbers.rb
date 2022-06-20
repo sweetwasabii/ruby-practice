@@ -288,6 +288,8 @@ end
 # puts read_file_list("list.txt")
 
 def read_keyboard_list
+  print("Input list: ")
+
   list = []
   gets.chomp.split.each { |element|
     list.push element.to_i
@@ -331,3 +333,129 @@ end
 # task3_2(false, 2, "list.txt")
 # task3_2(false, 3, "list.txt")
 # task3_2(false, 4, "list.txt")
+
+=begin
+№3 Методы, принимающие блок как аргумент
+
+1. Решить предложенные задачи по вариантам.
+Задание в отдельную программу. БЕЗ ИСПОЛЬЗОВАНИЯ ЦИКЛОВ.
+Реализовать выбор пользователя какую задачу решать.
+Чтение из файла или с клавиатуры.
+
+Вариант 11, задачи: 11, 23, 35, 47, 59
+=end
+
+# 11. Дан целочисленный массив, в котором лишь один элемент отличается от остальных.
+# Необходимо найти значение этого элемента.
+
+def task4_11(*list)
+  return list.find { |element| list.count(element) == 1}
+end
+
+# list = read_keyboard_list
+# puts "Method's result: " + task4_11(*list).to_s
+# 2 3 2 3 3 4 5 4 4
+# 5
+
+# 23. Дан целочисленный массив. Необходимо найти два наименьших элемента.
+
+def task4_23(*list)
+  return list.min(2)
+end
+
+# list = read_keyboard_list
+# puts "Method's result: " + task4_23(*list).to_s
+# 3 5 4 2 3 3 1 6 -> 1 2
+# 3 5 4 2 3 3 2 6 -> 2 2
+
+# 35. Дано вещественное число R и массив вещественных чисел.
+# Найти элемент массива, который наиболее близок к данному числу.
+
+def task4_35(number, *list)
+  dif = (number - list.first).abs
+  x = list.first
+
+  list.each { |element|
+    if (number - element).abs < dif
+      dif = (number - element).abs
+      x = element
+    end
+  }
+
+  return x
+end
+
+# puts "Method's result: " + task4_35(6.5, 1.2, 3.45, 4.21, 7.8, 2.3, 4.5).to_s
+# 6.5
+# 1.2 3.45 4.21 7.8 2.3 4.5
+# 7.8
+
+# 47. Для введенного списка положительных чисел построить список
+# всех положительных делителей элементов списка без повторений.
+
+def get_dividers(number)
+  list = []
+
+  if number != 0
+    list.push(1)
+    list.push(number)
+  end
+
+  sq = Math.sqrt(number).to_i
+
+  (2..sq).each { |i|
+    if number % i == 0
+      list.push(i)
+      if i * i != number
+        list.push(number / i)
+      end
+    end
+  }
+
+  return list
+end
+
+# puts get_dividers(10)
+# puts get_dividers(17)
+# puts get_dividers(36)
+
+def task4_47(*list)
+  dividers = []
+
+  list.each { |element1|
+    get_dividers(element1).each { |element2|
+      unless dividers.include?(element2)
+        dividers.push(element2)
+      end
+    }
+  }
+
+  return dividers.sort
+end
+
+# list = read_keyboard_list
+# puts "Method's result: " + task4_47(*list).to_s
+
+# 10 17 12 9 -> 1 2 3 4 5 6 9 10 12 17
+
+# 59. Дан список. Построить новый список из квадратов неотрицательных чисел,
+# меньших 100 и встречающихся в массиве больше 2 раз.
+
+def task4_59(*list)
+  use = []
+  sq = []
+
+  list.each { |element|
+    if element < 100 and list.count(element) > 2 and not use.include?(element)
+      use.push(element)
+      sq.push(element ** 2)
+    end
+  }
+
+  return sq.sort
+end
+
+list = read_keyboard_list
+puts "Method's result: " + task4_59(*list).to_s
+# 2 3 2 3 2 3 4 5 4 4 -> 4 9 16
+

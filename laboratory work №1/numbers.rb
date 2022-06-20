@@ -335,11 +335,10 @@ end
 # task3_2(false, 4, "list.txt")
 
 =begin
-№3 Методы, принимающие блок как аргумент
+№4 Методы, принимающие блок как аргумент
 
-1. Решить предложенные задачи по вариантам.
+Решить предложенные задачи по вариантам.
 Задание в отдельную программу. БЕЗ ИСПОЛЬЗОВАНИЯ ЦИКЛОВ.
-Реализовать выбор пользователя какую задачу решать.
 Чтение из файла или с клавиатуры.
 
 Вариант 11, задачи: 11, 23, 35, 47, 59
@@ -455,7 +454,85 @@ def task4_59(*list)
   return sq.sort
 end
 
-list = read_keyboard_list
-puts "Method's result: " + task4_59(*list).to_s
+# list = read_keyboard_list
+# puts "Method's result: " + task4_59(*list).to_s
 # 2 3 2 3 2 3 4 5 4 4 -> 4 9 16
+
+=begin
+№4_2 Строки
+
+Решить задачи по вариантам.
+Решить с помощью методов класса String.
+
+Вариант 11, задачи: 5, 7, 14
+=end
+
+# 5. Дана строка. Необходимо перемешать все символы строки в случайном порядке.
+
+def task4_2_5(str)
+  size = str.size
+  index = 0
+  using_indexes = []
+  rnd = Random.new
+
+  str.each_char { |symbol|
+    irand = rnd.rand(size)
+    unless using_indexes.include?(irand)
+      str[index] = str[irand]
+      str[irand] = symbol
+      using_indexes.push(irand)
+    end
+    index += 1
+  }
+
+  return str
+end
+
+# puts "Method's result: " + task4_2_5("abcdefg")
+
+# 7. Дана строка, состоящая из символов латиницы.
+# Необходимо проверить образуют ли прописные символы этой строки палиндром.
+
+def task4_2_7(str)
+  index = 0
+  letters = ""
+
+  str.each_byte do |ascii|
+    if ascii >= 97 and ascii <= 122
+      letters += ascii.chr
+    end
+  end
+
+  return letters == letters.reverse
+end
+
+# puts "Method's result: " + task4_2_7("aVbNcAUcba").to_s
+# puts "Method's result: " + task4_2_7("abbcd").to_s
+
+# 14. Дана строка в которой записаны слова через пробел.
+# Необходимо упорядочить слова по количеству букв в каждом слове.
+
+def task4_2_14(str)
+  list = str.split
+  sizes = []
+
+  list.each { |word|
+    sizes.push(word.size)
+  }
+
+  sizes.sort
+  new_str = ""
+
+  sizes.each { |word_size|
+    word = list.select {|element| element.size == word_size}.first
+    new_str += word + " "
+    list.delete(word)
+  }
+
+  return new_str.delete_suffix(" ")
+end
+
+# puts task4_2_14("abcd abc abcdef ab aaaaaaa")
+
+
 

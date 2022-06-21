@@ -534,5 +534,23 @@ end
 
 # puts task4_2_14("abcd abc abcdef ab aaaaaaa")
 
+=begin
+№4_3 Строки
+
+Дана строка. Необходимо найти все даты, которые описаны в виде "31 февраля 2007"
+Решить задачи по вариантам. Решить с помощью методов класса String.
+
+Вариант 11, задачи: 5, 7, 14
+=end
+
+def get_dates(file_name)
+  file = File.new(file_name, "r:UTF-8")
+  content = file.read
+
+  dates = content.scan(/[0-9]{2} [а-я]+ [0-9]{4}/)
+  return dates
+end
+
+# puts get_dates("dates.txt")
 
 

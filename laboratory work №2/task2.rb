@@ -22,6 +22,7 @@
 
 require "yaml"
 require_relative "Department.rb"
+require_relative "Department_list.rb"
 
 def read_from_txt(file_name)
   file = File.new(file_name, "r:UTF-8")
@@ -111,6 +112,7 @@ write_to_txt(departments, "input_departments.txt")
 # 2.8 Прочитать массив объектов, вывести на экран, добавить еще один отдел,
 # вывести результат на экран, записать измененный массив в тот же файл.
 
+=begin
 departments = read_from_YAML("input_yaml.yml")
 print_departments(departments)
 
@@ -118,3 +120,7 @@ departments.push(Department.new("Аналитика", "+7 (918) 648-07-50", "П�
 print_departments(departments)
 
 write_to_YAML(departments, "output_yaml.yml")
+=end
+
+departments = read_from_txt("input_departments.txt")
+department_list = Department_list.new(departments)

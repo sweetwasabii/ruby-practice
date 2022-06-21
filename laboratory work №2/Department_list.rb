@@ -13,6 +13,8 @@
 # 3.4 Построить конструктор, читающий объект из YAML и коструктор, читающий объект из TXT.
 # Как реализовать такие кострукторы, при условии, что переопределение конструкторов в ruby невозможно?
 
+# 5. Построить метод, сортирующий записи по названию.
+
 class Department_list
   attr_reader :notes_list, :chosen_note_index
 
@@ -106,5 +108,15 @@ class Department_list
     }
 
     file.close
+  end
+
+  def sort
+    @notes_list.sort! { |note1, note2| note1.name <=> note2.name }
+  end
+
+  def to_s
+    notes = ""
+    @notes_list.each {|note| notes += "#{note}\n"}
+    return notes
   end
 end

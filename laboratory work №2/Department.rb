@@ -37,7 +37,17 @@ class Department
       @phone_number = new_phone_number
     end
   end
+
+  def to_s
+    return "Отдел: #{@name}\n" + "Номер: #{@phone_number}\n"
+  end
 end
 
+# 2. Создать несколько объектов, вывести информацию о них на экран.
+# Продумать корректный способ вывода информации о текущем состоянии объекта на экран.
+
+sales = Department.new("Продажи", "+7 (996) 683-72-88")
 accounting = Department.new("Бухгалтерия", "+7 (999) 529-23-57")
-puts accounting.name + " " + accounting.phone_number
+development = Department.new("Разработка", "+7 (992) 453-69-95")
+
+puts sales.to_s + "\n" + accounting.to_s + "\n" + development.to_s

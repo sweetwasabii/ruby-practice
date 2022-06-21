@@ -15,6 +15,9 @@
 
 # 5. Построить метод, сортирующий записи по названию.
 
+require "yaml"
+require_relative "Department.rb"
+
 class Department_list
   attr_reader :notes_list, :chosen_note_index
 
@@ -24,11 +27,29 @@ class Department_list
   end
 
   def Department_list.txt(file_name)
-    new(read_from_txt(file_name))
+    file = File.new(file_name, "r:UTF-8")
+    content = file.read
+
+    departments = []
+    content.strip.split("\n\n").each { |result|
+      department = result.split("\n")
+      name = department[0]
+      phone_number = department[1]
+      duties = department.slice(2..department.size - 1)
+
+      departments.push(Department.new(name, phone_number, *duties))
+    }
+
+    file.close
+    new(*departments)
   end
 
   def Department_list.yaml(file_name)
-    new(read_from_YAML(file_name))
+    file = File.new(file_name, "r:UTF-8")
+    content = file.read
+
+    file.close
+    new(*YAML.load(content))
   end
 
   def is_index_correct(note_index)
@@ -66,6 +87,7 @@ class Department_list
     end
   end
 
+=begin
   def read_from_YAML(file_name)
     file = File.new(file_name, "r:UTF-8")
     content = file.read
@@ -73,6 +95,7 @@ class Department_list
     @notes_list = YAML.load(content)
     file.close
   end
+=end
 
   def write_to_YAML(file_name)
     file = File.new(file_name, "w:UTF-8")
@@ -81,6 +104,7 @@ class Department_list
     file.close
   end
 
+=begin
   def read_from_txt(file_name)
     file = File.new(file_name, "r:UTF-8")
     content = file.read
@@ -98,6 +122,7 @@ class Department_list
     @notes_list = departments
     file.close
   end
+=end
 
   def write_to_txt(file_name)
     file = File.new(file_name, "w:UTF-8")

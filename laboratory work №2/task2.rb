@@ -40,26 +40,40 @@ def read_from_txt(file_name)
   return departments
 end
 
-# 2.3 Написать метод, который выводит массив объектов класса Department на экран.
-
-def print_departments(departments)
-  departments.each { |department| puts "#{department}\n"}
-end
-
-departments = read_from_txt("input_departments.txt")
-print_departments(departments)
-
-# 2.4 Написать метод write_to_txt, который записывает массив объектов класса Department в файл txt.
-
 def write_to_txt(departments, file_name)
   file = File.new(file_name, "w:UTF-8", )
   departments.each { |department|
     output = department.name + "\n" + department.phone_number + "\n"
     department.duties.each { |duty| output += duty + "\n"}
     file.print("#{output}\n")
-}
+  }
 
   file.close
 end
 
-write_to_txt(departments, "output_departments.txt")
+def print_departments(departments)
+  departments.each { |department| puts "#{department}\n"}
+end
+
+# 2.3 Написать метод, который выводит массив объектов класса Department на экран.
+
+# departments = read_from_txt("input_departments.txt")
+# print_departments(departments)
+
+# 2.4 Написать метод write_to_txt, который записывает массив объектов класса Department в файл txt.
+
+# departments = read_from_txt("input_departments.txt")
+# write_to_txt(departments, "output_departments.txt")
+
+# 2.5 Прочитать массив объектов, вывести на экран, добавить еще один отдел,
+# вывести результат на экран, записать измененный массив в тот же файл.
+
+departments = read_from_txt("input_departments.txt")
+print_departments(departments)
+
+departments.push(Department.new("Аналитика", "+7 (918) 648-07-50", "Проводить опросы"))
+print_departments(departments)
+
+write_to_txt(departments, "input_departments.txt")
+
+

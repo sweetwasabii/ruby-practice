@@ -27,7 +27,7 @@ def read_from_txt(file_name)
   content = file.read
 
   departments = []
-  content.split("\n\n").each { |result|
+  content.strip.split("\n\n").each { |result|
     department = result.split("\n")
     name = department[0]
     phone_number = department[1]
@@ -36,6 +36,7 @@ def read_from_txt(file_name)
     departments.push(Department.new(name, phone_number, *duties))
   }
 
+  file.close
   return departments
 end
 
@@ -45,5 +46,20 @@ def print_departments(departments)
   departments.each { |department| puts "#{department}\n"}
 end
 
-departments = read_from_txt("task2_departments.txt")
+departments = read_from_txt("input_departments.txt")
 print_departments(departments)
+
+# 2.4 Написать метод write_to_txt, который записывает массив объектов класса Department в файл txt.
+
+def write_to_txt(departments, file_name)
+  file = File.new(file_name, "w:UTF-8", )
+  departments.each { |department|
+    output = department.name + "\n" + department.phone_number + "\n"
+    department.duties.each { |duty| output += duty + "\n"}
+    file.print("#{output}\n")
+}
+
+  file.close
+end
+
+write_to_txt(departments, "output_departments.txt")

@@ -39,5 +39,11 @@ def read_from_txt(file_name)
   return departments
 end
 
+# 2.3 Написать метод, который выводит массив объектов класса Department на экран.
+
+def print_departments(departments)
+  departments.each { |department| puts "#{department}\n"}
+end
+
 departments = read_from_txt("task2_departments.txt")
-departments.each { |department| puts "#{department}\n"}
+print_departments(departments)

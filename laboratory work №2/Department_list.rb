@@ -10,12 +10,23 @@
 
 # 3.3 Реализовать методы сериализации и десериализации.
 
+# 3.4 Построить конструктор, читающий объект из YAML и коструктор, читающий объект из TXT.
+# Как реализовать такие кострукторы, при условии, что переопределение конструкторов в ruby невозможно?
+
 class Department_list
   attr_reader :notes_list, :chosen_note_index
 
   def initialize(*notes)
     @notes_list = []
     notes.each {|note| add_note(note)}
+  end
+
+  def Department_list.txt(file_name)
+    new(read_from_txt(file_name))
+  end
+
+  def Department_list.yaml(file_name)
+    new(read_from_YAML(file_name))
   end
 
   def is_index_correct(note_index)
@@ -53,6 +64,14 @@ class Department_list
     end
   end
 
+  def read_from_YAML(file_name)
+    file = File.new(file_name, "r:UTF-8")
+    content = file.read
+
+    @notes_list = YAML.load(content)
+    file.close
+  end
+
   def write_to_YAML(file_name)
     file = File.new(file_name, "w:UTF-8")
     file.print(@notes_list.to_yaml)
@@ -60,11 +79,32 @@ class Department_list
     file.close
   end
 
-  def read_from_YAML(file_name)
+  def read_from_txt(file_name)
     file = File.new(file_name, "r:UTF-8")
     content = file.read
 
-    @notes_list = YAML.load(content)
+    departments = []
+    content.strip.split("\n\n").each { |result|
+      department = result.split("\n")
+      name = department[0]
+      phone_number = department[1]
+      duties = department.slice(2..department.size - 1)
+
+      departments.push(Department.new(name, phone_number, *duties))
+    }
+
+    @notes_list = departments
+    file.close
+  end
+
+  def write_to_txt(file_name)
+    file = File.new(file_name, "w:UTF-8")
+    @notes_list.each { |department|
+      output = department.name + "\n" + department.phone_number + "\n"
+      department.duties.each { |duty| output += duty + "\n"}
+      file.print("#{output}\n")
+    }
+
     file.close
   end
 end

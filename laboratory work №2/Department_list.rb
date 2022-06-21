@@ -8,6 +8,8 @@
 # метод get_note, возвращающий выбранную запись
 # delete_note, удаляющий выбранную запись.
 
+# 3.3 Реализовать методы сериализации и десериализации.
+
 class Department_list
   attr_reader :notes_list, :chosen_note_index
 
@@ -21,7 +23,9 @@ class Department_list
   end
 
   def add_note(note)
-    @notes_list.push(note)
+    unless @notes_list.include?(note)
+      @notes_list.push(note)
+    end
   end
 
   def choose_note(note_index)
@@ -47,5 +51,20 @@ class Department_list
     if is_index_correct(@chosen_note_index)
       @notes_list.delete_at(@chosen_note_index)
     end
+  end
+
+  def write_to_YAML(file_name)
+    file = File.new(file_name, "w:UTF-8")
+    file.print(@notes_list.to_yaml)
+
+    file.close
+  end
+
+  def read_from_YAML(file_name)
+    file = File.new(file_name, "r:UTF-8")
+    content = file.read
+
+    @notes_list = YAML.load(content)
+    file.close
   end
 end

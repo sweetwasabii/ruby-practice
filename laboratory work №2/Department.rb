@@ -4,15 +4,21 @@
 Написать конструктор, геттеры и сеттеры. Избежать дублирования кода.
 Рассмотреть способы реализации геттеров и сеттеров с помощью символов.
 
+5.1 В класс Department добавьте поле Post_list.
+Обновите конструктор.
+
 =end
 
-class Department
-  attr_reader :name, :phone_number, :duties, :marking_duty_index
+require_relative "Post_list.rb"
 
-  def initialize(name, phone_number, *duties)
+class Department
+  attr_reader :name, :phone_number, :duties, :marking_duty_index, :posts
+
+  def initialize(name, phone_number, duties, posts)
     @name = set_name(name)
     @phone_number = set_phone_number(phone_number)
     @duties = []
+    @posts = posts
 
     duties.each { |duty|
       add_duty(duty)

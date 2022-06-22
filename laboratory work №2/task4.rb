@@ -1,6 +1,7 @@
 require_relative "Department.rb"
 require_relative "Department_list.rb"
 require_relative "Post.rb"
+require_relative "Post_list.rb"
 
 sales = Department.new("Продажи", "+7 (996) 683-72-88",
                        "Предлагать покупателям новые продукты",
@@ -17,5 +18,11 @@ post2 = Post.new(sales, "Старший менеджер", 80000, true)
 post3 = Post.new(accounting, "Бухгалтер", 40000, false)
 post4 = Post.new(development, "Разработчик", 100000, false)
 
-posts = [post1, post2, post3, post4]
-posts.each { |post| puts post.to_s + "\n"}
+# posts = Post_list.new(post1, post2, post3, post4)
+# posts.write_to_YAML("input_posts.yml")
+
+# posts = Post_list.txt("input_posts.txt")
+# puts posts.to_s
+
+# posts = Post_list.yaml("input_posts.yml")
+# puts posts.to_s

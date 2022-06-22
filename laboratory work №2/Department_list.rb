@@ -87,42 +87,12 @@ class Department_list
     end
   end
 
-=begin
-  def read_from_YAML(file_name)
-    file = File.new(file_name, "r:UTF-8")
-    content = file.read
-
-    @notes_list = YAML.load(content)
-    file.close
-  end
-=end
-
   def write_to_YAML(file_name)
     file = File.new(file_name, "w:UTF-8")
     file.print(@notes_list.to_yaml)
 
     file.close
   end
-
-=begin
-  def read_from_txt(file_name)
-    file = File.new(file_name, "r:UTF-8")
-    content = file.read
-
-    departments = []
-    content.strip.split("\n\n").each { |result|
-      department = result.split("\n")
-      name = department[0]
-      phone_number = department[1]
-      duties = department.slice(2..department.size - 1)
-
-      departments.push(Department.new(name, phone_number, *duties))
-    }
-
-    @notes_list = departments
-    file.close
-  end
-=end
 
   def write_to_txt(file_name)
     file = File.new(file_name, "w:UTF-8")

@@ -1,0 +1,36 @@
+---
+- !ruby/object:Post
+  department: &1 !ruby/object:Department
+    name: Продажи
+    phone_number: "+7 (996) 683-72-88"
+    duties:
+    - Предлагать покупателям новые продукты
+    - Проводить встречи с потенциальными клиентами
+  name: Младший менеджер
+  salary: 55000
+  is_free: false
+- !ruby/object:Post
+  department: *1
+  name: Старший менеджер
+  salary: 80000
+  is_free: true
+- !ruby/object:Post
+  department: !ruby/object:Department
+    name: Бухгалтерия
+    phone_number: "+7 (999) 529-23-57"
+    duties:
+    - Подводить итоги в 19:00
+    - Заносить данные о покупах
+  name: Бухгалтер
+  salary: 40000
+  is_free: false
+- !ruby/object:Post
+  department: !ruby/object:Department
+    name: Разработка
+    phone_number: "+7 (992) 453-69-95"
+    duties:
+    - Разрабатывать новые решение для улучшения производительности
+    - Проводить тестирования новых решений
+  name: Разработчик
+  salary: 100000
+  is_free: false

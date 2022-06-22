@@ -13,6 +13,9 @@
 удалить должность,
 изменить должность.
 
+5.3 Напишите метод, который позволит получить все вакантные
+должности этого отдела.
+
 =end
 
 require_relative "Post_list.rb"
@@ -124,5 +127,16 @@ class Department
 
   def change_post
     posts.change_note
+  end
+
+  def get_free_posts
+    free = []
+    posts.each { |post|
+      if post.is_free
+        free.push(post)
+      end
+    }
+
+    return free
   end
 end

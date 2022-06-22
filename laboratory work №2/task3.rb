@@ -1,3 +1,4 @@
+require_relative "Department.rb"
 require_relative "Department_list.rb"
 
 departments = Department_list.yaml("input_yaml.yml")
@@ -20,3 +21,16 @@ development = Department.new("Разработка", "+7 (992) 453-69-95",
 departments = Department_list.new(sales, accounting, development)
 puts departments.to_s
 =end
+
+departments.add_note(Department.new("Аналитика", "+7 (918) 648-07-50", "Проводить опросы"))
+puts departments.to_s
+
+departments.choose_note(1)
+puts "Выбранный отдел:\n\n" + departments.get_note.to_s + "\n"
+
+department = Department.new("Связи с общественностью","+7 (999) 845-22-10", "Готовить рекламные кампании")
+departments.change_note(department)
+puts "Выбранный отдел:\n\n" + departments.get_note.to_s + "\n"
+
+departments.delete_note
+puts departments.to_s

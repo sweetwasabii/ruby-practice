@@ -7,6 +7,12 @@
 5.1 В класс Department добавьте поле Post_list.
 Обновите конструктор.
 
+5.2 Напишите методы:
+добавить должность,
+выбрать должность,
+удалить должность,
+изменить должность.
+
 =end
 
 require_relative "Post_list.rb"
@@ -18,11 +24,10 @@ class Department
     @name = set_name(name)
     @phone_number = set_phone_number(phone_number)
     @duties = []
-    @posts = posts
+    @posts = []
 
-    duties.each { |duty|
-      add_duty(duty)
-    }
+    duties.each { |duty| add_duty(duty) }
+    posts.each { |post| posts.add_note(post)}
   end
 
   # формат имени: состоит только из букы
@@ -103,5 +108,21 @@ class Department
   def to_s
     return "Отдел: #{@name}\n" + "Номер: #{@phone_number}\n" +
       ((get_duties_to_s == "")? "": "\n" + get_duties_to_s)
+  end
+
+  def add_post(post)
+    posts.add_note(post)
+  end
+
+  def delete_post
+    posts.delete_note
+  end
+
+  def choose_post(post_index)
+    posts.choose_note(post_index)
+  end
+
+  def change_post
+    posts.change_note
   end
 end

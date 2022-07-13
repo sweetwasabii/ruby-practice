@@ -4,11 +4,46 @@ require_relative "Post.rb"
 
 class Post_list
   # поля: post_list, marking_department_index
-  attr_reader :marking_post_index
 
-  def initialize
+  def initialize(post_list = [])
     @post_list = []
+    post_list.each { |post| add_post(post)}
+
     @marking_post_index = -1
+  end
+
+  def size
+    return @post_list.size
+  end
+
+  def empty?
+    return size == 0
+  end
+
+  def marking_post_index
+    return @marking_post_index + 1
+  end
+
+  def get_post_list
+    new_post_list = Post_list.new(@post_list)
+
+    begin
+      new_post_list.mark_post(@marking_post_index)
+    rescue
+      # ignored
+    end
+
+    return new_post_list
+  end
+
+  def get_free_post_list
+    free_post_list = Post_list.new
+    @post_list.each do |post|
+      if post.is_free
+        free_post_list.add_post(post.get_post)
+      end
+    end
+    return free_post_list
   end
 
   # def Post_list.txt(file_name)
@@ -45,17 +80,17 @@ class Post_list
         raise ArgumentError, "This post \"#{new_post.post_name}\" in the department \"#{new_post.department_name}\" already exists"
       end
     }
-    @post_list.push(new_post)
+    @post_list.push(new_post.get_post)
   end
 
-  def is_index_correct(index, list)
+  def is_index_correct?(index, list)
     return (0..list.size - 1).include?(index)
   end
 
   # индексация у пользователя начинается с 1
   def mark_post(post_index)
     post_index -= 1
-    if is_index_correct(post_index, @post_list)
+    if is_index_correct?(post_index, @post_list)
       @marking_post_index = post_index
     else
       raise ArgumentError, "The post index #{post_index + 1} is incorrect"
@@ -69,23 +104,23 @@ class Post_list
       end
     }
 
-    if is_index_correct(@marking_post_index, @post_list)
-      @post_list[@marking_post_index] = new_post
+    if is_index_correct?(@marking_post_index, @post_list)
+      @post_list[@marking_post_index] = new_post.get_post
     else
       raise ArgumentError, "The marking post index #{@marking_post_index + 1} is incorrect"
     end
   end
 
-  def get_post
-    if is_index_correct(@marking_post_index, @post_list)
-      return @post_list[@marking_post_index]
+  def get_marking_post
+    if is_index_correct?(@marking_post_index, @post_list)
+      return @post_list[@marking_post_index].get_post
     else
       raise ArgumentError, "The marking post index #{@marking_post_index + 1} is incorrect"
     end
   end
 
   def delete_post
-    if is_index_correct(@marking_post_index, @post_list)
+    if is_index_correct?(@marking_post_index, @post_list)
       @post_list.delete_at(@marking_post_index)
       @marking_post_index = -1
     else
@@ -113,7 +148,7 @@ class Post_list
   #   file.close
   # end
 
-  def sort
+  def sort!
     @post_list.sort! { |post1, post2| post1.department_name <=> post2.department_name }
   end
 
@@ -124,29 +159,31 @@ class Post_list
     }
     return s
   end
+
+  private :is_index_correct?
 end
 
 begin
-  post1 = Post.new("Продажи", "Младший менеджер", 55000, false)
-  post2 = Post.new("Продажи", "Старший менеджер", 80000, true)
-  post3 = Post.new("Бухгатерия", "Бухгалтер", 40000, false)
-  post4 = Post.new("Разработка", "Разработчик", 100000, false)
-
-  posts = Post_list.new
-  posts.add_post(post1)
-  posts.add_post(post2)
-  posts.add_post(post3)
-  posts.add_post(post4)
-
-  posts.mark_post(2)
-  posts.delete_post
-
-  posts.mark_post(3)
-  posts.replace_post(post2)
-
-  # posts.sort
-  puts posts.get_post
-  # puts posts
+  # post1 = Post.new("Продажи", "Младший менеджер", 55000, false)
+  # post2 = Post.new("Продажи", "Старший менеджер", 80000, true)
+  # post3 = Post.new("Бухгатерия", "Бухгалтер", 40000, false)
+  # post4 = Post.new("Разработка", "Разработчик", 100000, true)
+  #
+  # posts = Post_list.new
+  # posts.add_post(post1)
+  # posts.add_post(post2)
+  # posts.add_post(post3)
+  # posts.add_post(post4)
+  #
+  # # posts.mark_post(2)
+  # # posts.delete_post
+  # #
+  # # posts.mark_post(3)
+  # # posts.replace_post(post2)
+  #
+  # # posts.sort
+  # # puts posts.get_free_posts
+  # # puts posts
 rescue ArgumentError => error
   puts "Error: " + error.message + "."
 end

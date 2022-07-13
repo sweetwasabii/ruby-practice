@@ -56,21 +56,42 @@
 
 =end
 
-# require_relative "Post_list.rb"
+# ПОДЪЁМ ИСКЛЮЧЕНИЙ СНИЗУ-ВВЕРХ НУЖЕН ДЛЯ ТОГО,
+# ЧТОБЫ БЫЛО ВИДНО ЧТО В ДАННОМ МЕТОДЕ МОЖЕТ ВОЗНИКНУТЬ ОШИБКА
+
+require_relative "Post_list.rb"
 
 class Department
-  # поля: name, phone_number, duties, marking_duty_index, posts
-  attr_reader :marking_duty_index
+  # поля: name, phone_number, duties, marking_duty_index, posts, marking_post_index
   attr_writer :name
 
-  def initialize(name, phone_number) #, posts)
-    @name = self.name=(name)
-    @phone_number = self.phone_number=(phone_number)
+  def initialize(name, phone_number, duties = [], posts = Post_list.new)
+    @name = name.clone
+
+    begin
+      @phone_number = self.phone_number=(phone_number.clone)
+    rescue ArgumentError => error
+      raise error
+    end
+
     @duties = []
+    duties.each { |duty| add_duty(duty)}
     @marking_duty_index = -1
 
-    # @posts = Post_list.new
-    # posts.each { |post| @posts.add_note(post) }
+    @posts = posts.get_post_list
+  end
+
+  def get_department
+    new_department = Department.new(@name, @phone_number, @duties, @posts)
+
+    begin
+      new_department.mark_duty(@marking_duty_index)
+      new_department.mark_post(@posts.marking_post_index)
+    rescue ArgumentError
+      #ignored
+    end
+
+    return new_department
   end
 
   def name
@@ -91,15 +112,71 @@ class Department
     end
   end
 
+  def marking_duty_index
+    return @marking_duty_index + 1
+  end
+
+  def marking_post_index
+    return @posts.marking_post_index
+  end
+
+  def add_post(post)
+    if post.department_name == @name
+      begin
+      @posts.add_post(post.get_post)
+      rescue ArgumentError => error
+        raise error
+      end
+    else
+      raise ArgumentError, "The names of departments \"#{post.department_name}\" and \"#{name}\" don't match"
+    end
+  end
+
+  def mark_post(post_index)
+    begin
+      @posts.mark_post(post_index)
+    rescue ArgumentError => error
+      raise error
+    end
+  end
+
+  def delete_post
+    begin
+      @posts.delete_post
+    rescue ArgumentError => error
+      raise error
+    end
+  end
+
+  def get_post_list
+    return @posts.get_post_list
+  end
+
+  def get_free_post_list
+    return @posts.get_free_post_list
+  end
+
+  def replace_post(post)
+    if post.department_name == @name
+      begin
+        @posts.replace_post(post.get_post)
+      rescue ArgumentError => error
+        raise error
+      end
+    else
+      raise ArgumentError, "The names of departments \"#{post.department_name}\" and \"#{name}\" don't match"
+    end
+  end
+
   def add_duty(duty_text)
     if @duties.include?(duty_text)
       raise ArgumentError, "This duty \"#{duty_text}\" already exists"
     else
-      @duties.push(duty_text)
+      @duties.push(duty_text.clone)
     end
   end
 
-  def is_index_correct(index, list)
+  def is_index_correct?(index, list)
     return (0..list.size - 1).include?(index)
   end
 
@@ -107,7 +184,7 @@ class Department
   def mark_duty(duty_index)
     duty_index -= 1
 
-    if is_index_correct(duty_index, @duties)
+    if is_index_correct?(duty_index, @duties)
       @marking_duty_index = duty_index
     else
       raise ArgumentError, "The duty index #{duty_index + 1} is incorrect"
@@ -121,7 +198,7 @@ class Department
       @marking_duty_index = -1
     end
 
-    if is_index_correct(duty_index, @duties)
+    if is_index_correct?(duty_index, @duties)
       @duties.delete_at(duty_index)
     else
       raise ArgumentError, "The duty index #{duty_index + 1} is incorrect"
@@ -129,8 +206,8 @@ class Department
   end
 
   def get_marking_duty_text
-    if is_index_correct(@marking_duty_index, @duties)
-      return @duties[@marking_duty_index]
+    if is_index_correct?(@marking_duty_index, @duties)
+      return @duties[@marking_duty_index].clone
     else
       raise ArgumentError, "The marking duty index #{@marking_duty_index + 1} is incorrect"
     end
@@ -139,8 +216,8 @@ class Department
   def replace_marking_duty_text(duty_text)
     if @duties.include?(duty_text)
       raise ArgumentError, "This duty \"#{duty_text}\" already exists"
-    elsif is_index_correct(@marking_duty_index, @duties)
-      @duties[@marking_duty_index] = duty_text
+    elsif is_index_correct?(@marking_duty_index, @duties)
+      @duties[@marking_duty_index] = duty_text.clone
     else
       raise ArgumentError, "The marking duty index #{@marking_duty_index + 1} is incorrect"
     end
@@ -161,81 +238,45 @@ class Department
     puts get_duties_to_s
   end
 
-  # def posts
-  #   result = {}
-  #   @posts.each { |post| result[post.name] = salary}
-  #
-  #   return result
-  # end
-  #
-  #
-  #
-  # def add_post(post)
-  #   @posts.add_note(post)
-  # end
-  #
-  # def delete_post
-  #   if is_index_correct(@posts.chosen_note_index, @posts)
-  #     @posts.delete_note
-  #   end
-  # end
-  #
-  # def choose_post(post_index)
-  #   if is_index_correct(post_index - 1, @posts)
-  #     @posts.choose_note(post_index)
-  #   end
-  # end
-  #
-  # def change_post(post)
-  #   if is_index_correct(@posts.chosen_note_index, @posts)
-  #     @posts.change_note(post)
-  #   end
-  # end
-  #
-  # def get_free_posts
-  #   free = []
-  #   posts.each { |post|
-  #     if post.is_free
-  #       free.push(post)
-  #     end
-  #   }
-  #
-  #   return free
-  # end
-
   def to_s
     result = "Отдел: #{@name}\n" + "Номер: #{@phone_number}\n" +
-      ((get_duties_to_s == "")? "": "\n" + get_duties_to_s) + "\n"
-
-    # result += "Должности:\n\n"
-    # @posts.each { |post|
-    #   result += "Название: #{post.name}\n" +
-    #     "Зарплата: #{post.salary}\n" +
-    #     "Вакантно: #{((post.is_free)? "Да": "Нет")}\n\n"
-    # }
+      ((get_duties_to_s == "")? "": "\n" + get_duties_to_s) + "\n" + @posts.to_s
 
     return result
   end
+
+  private :is_index_correct?, :get_duties_to_s
 end
 
 begin
   sales = Department.new("Продажи", "+7 (996) 683-72-88")
+
   sales.add_duty("Предлагать покупателям новые продукты")
   sales.add_duty("Проводить встречи с потенциальными клиентами")
   sales.add_duty("Устраивать рекламные акции")
 
-  accounting = Department.new("Бухгалтерия", "+7 (999) 529-23-57")
-  accounting.add_duty("Подводить итоги в 19:00")
-  accounting.add_duty("Заносить данные о покупах")
-  accounting.delete_duty(1)
+  post1 = Post.new("Продажи", "Младший менеджер", 45000, false)
+  post2 = Post.new("Продажи", "Старший менеджер", 60000, true)
+  post3 = Post.new("Продажи", "Директор по развитию", 80000, false)
+  post4 = Post.new("Продажи", "Руководитель отдела продаж", 100000, true)
 
-  development = Department.new("Разработка", "+7 (992) 453-69-95")
-  development.add_duty("Разрабатывать новые решение для улучшения производительности")
-  development.add_duty("Проводить тестирования новых решений")
-  development.mark_duty(1)
-  development.replace_marking_duty_text("Разрабатывать новые решение для улучшения эффективности")
+  sales.add_post(post1)
+  sales.add_post(post2)
+  sales.add_post(post3)
+  sales.add_post(post4)
 
-  # puts sales.to_s + "\n" + accounting.to_s + "\n" + development.to_s
+  post1.post_name = ""
+
+  sales.mark_duty(1)
+  a = sales.get_marking_duty_text
+  a[0] = "r"
+  # sales.delete_post
+  #
+  # sales.mark_post(3)
+  # sales.replace_post(post1)
+
+  # puts sales.get_all_posts
+  sales.print_duties
 rescue ArgumentError => error
   puts "Error: " + error.message + "."
 end

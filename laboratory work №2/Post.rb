@@ -14,7 +14,8 @@ class Post
   attr_writer :department_name, :post_name
 
   def initialize(department_name, post_name, salary, is_free)
-    @department_name, @post_name, @salary, @is_free = department_name, post_name, salary, is_free
+    @department_name, @post_name = department_name.clone, post_name.clone
+    @salary, @is_free = salary, is_free
   end
 
   def department_name
@@ -23,6 +24,10 @@ class Post
 
   def post_name
     return @post_name.clone
+  end
+
+  def get_post
+    return Post.new(@department_name, @post_name, @salary, @is_free)
   end
 
   def to_s
@@ -35,5 +40,7 @@ end
 # post2 = Post.new("Продажи", "Старший менеджер", 80000, true)
 # post3 = Post.new("Бухгатерия", "Бухгалтер", 40000, false)
 # post4 = Post.new("Разработка", "Разработчик", 100000, false)
+#
+# post1.post_name = "Швейцар"
 #
 # puts post1.to_s + post2.to_s + post3.to_s + post4.to_s

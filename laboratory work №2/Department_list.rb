@@ -27,9 +27,21 @@ class Department_list
   # поля: department_list, marking_department_index
   attr_reader :marking_department_index
 
-  def initialize
+  def initialize(department_list = [])
     @department_list = []
+    department_list.each { |department| add_department(department)}
+
     @marking_department_index = -1
+  end
+
+  def get_department_list
+    new_department_list = Department_list.new(@department_list)
+
+    begin
+      new_department_list.mark_department(@marking_department_index)
+    rescue
+      # ignored
+    end
   end
 
   # def Department_list.txt(file_name)
@@ -66,18 +78,18 @@ class Department_list
     if get_department_names.include?(department.name)
       raise ArgumentError, "This department \"#{department.name}\" already exists"
     else
-      @department_list.push(department)
+      @department_list.push(department.get_department)
     end
   end
 
-  def is_index_correct(index, list)
+  def is_index_correct?(index, list)
     return (0..list.size - 1).include?(index)
   end
 
   # индексация у пользователя начинается с 1
   def mark_department(department_index)
     department_index -= 1
-    if is_index_correct(department_index, @department_list)
+    if is_index_correct?(department_index, @department_list)
       @marking_department_index = department_index
     else
       raise ArgumentError, "The department index #{department_index + 1} is incorrect"
@@ -87,23 +99,23 @@ class Department_list
   def replace_department(new_department)
     if get_department_names.include?(new_department.name)
       raise ArgumentError, "This department \"#{new_department.name}\" already exists"
-    elsif is_index_correct(@marking_department_index, @department_list)
-      @department_list[@marking_department_index] = new_department
+    elsif is_index_correct?(@marking_department_index, @department_list)
+      @department_list[@marking_department_index] = new_department.get_department
     else
       raise ArgumentError, "The marking department index #{@marking_department_index + 1} is incorrect"
     end
   end
 
-  def get_department
-    if is_index_correct(@marking_department_index, @department_list)
-      return @department_list[@marking_department_index]
+  def get_marking_department
+    if is_index_correct?(@marking_department_index, @department_list)
+      return @department_list[@marking_department_index].get_department
     else
       raise ArgumentError, "The marking department index #{@marking_department_index + 1} is incorrect"
     end
   end
 
   def delete_department
-    if is_index_correct(@marking_department_index, @department_list)
+    if is_index_correct?(@marking_department_index, @department_list)
       @department_list.delete_at(@marking_department_index)
       @marking_department_index = -1
     else
@@ -129,7 +141,7 @@ class Department_list
   #   file.close
   # end
 
-  def sort
+  def sort!
     @department_list.sort! { |department1, department2| department1.name <=> department2.name }
   end
 
@@ -140,6 +152,8 @@ class Department_list
     }
     return s
   end
+
+  private :is_index_correct?, :get_department_names
 end
 
 begin

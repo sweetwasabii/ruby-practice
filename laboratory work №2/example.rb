@@ -1,56 +1,75 @@
 class Example
-  def initialize(samp)
-    @samp = samp
+  attr_writer :name, :age, :features
+  attr_accessor :age, :features
+
+  def initialize(name, age, features)
+    @name = name
+    @age = age
+    @features = features
+    puts "привет"
   end
 
-  def samp
-    return @samp.clone
+  def name
+    return @name.clone
   end
 
-=begin
-  def samp
-    return @samp
-  end
-=end
-
-=begin
-  def samp
-    return Array.new(@samp)
+  def age
+    return @age
   end
 
-  def samp=(samp)
-    if samp[0] > 5
-      @samp = samp
-    end
+  def features
+    return @features.map {|feature| feature.clone}
   end
-=end
 
+  def get_example
+    return Example.new(@name.clone, @age, @features.map {|feature| feature.clone})
+  end
 end
 
 
-samp = Example.new("привет")
-new_samp = samp.samp
-new_samp[0] = "h"
-puts samp.samp
+Masha = Example.new("Маша", 78, ["прыгать", "бегать", "какать"])
+Sasha = Masha.clone
+# Sasha.features[0] = "думать"
 
+if 2 < 5
+  puts "hekke"
+end
 
-=begin
-samps = Example.new([1, 2, 3, 4, 5])
-puts samps.samp.to_s + "\n"
-
-some = samps.samp
-some[0] = 10
-
-puts samps.samp.to_s
-=end
-
-=begin
-a = "first"
-b = a.dup
-
-b[0] = "g"
-b[1] = "j"
-
-puts a + " " + b
-=end
-
+# puts Masha.name.object_id
+# puts Sasha.name.object_id
+# puts "\n"
+# puts Masha.age.object_id
+# puts Sasha.age.object_id
+# puts "\n"
+# puts Masha.features.object_id
+# puts Sasha.features.object_id
+# puts "\n"
+#
+# puts Masha.object_id
+# puts Sasha.object_id
+#
+# Sasha.name[0] = "К"
+# Sasha.features[0] = "думать"
+#
+# # puts Sasha.name
+# # puts Sasha.age
+# # puts Sasha.features.to_s
+#
+# # name = Masha.name
+# # name[0] = "К"
+# #
+# # age = Masha.age
+# #
+# # a = true
+# # b = a
+# # b = false
+# #
+# # puts a
+# #
+# # features = Masha.features
+# # features[1][0] = "k"
+# # features = ["ab", "cd"]
+#
+# puts Masha.name
+# puts Masha.age
+# puts Masha.features.to_s

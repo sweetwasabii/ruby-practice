@@ -36,8 +36,28 @@
 Модифицировать класс так, чтобы в произвольный момент времени не мог существовать объект
 с непозволительной строкой в поле номер телефона. Протестировать полученный класс.
 
-5.1 В класс Department добавьте поле Post_list.
-Обновите конструктор.
+2.1 Продумайте структуру текстового файла, в котором будут
+храниться объекты класса Department. Напишите такой файл.
+
+2.2 Напишите метод, который читает read_from_txt,
+который читает несколько отделов из текстового файла и возвращает массив объектов класса Department.
+
+2.3 Написать метод, который выводит массив объектов класса Department на экран.
+
+2.4 Написать метод write_to_txt, который записывает массив объектов класса Department в файл txt.
+
+2.5 Прочитать массив объектов, вывести на экран, добавить еще один отдел,
+вывести результат на экран, записать измененный массив в тот же файл.
+
+2.6 Написать метод write_to_YAML, который записывает массив объектов класса Department в файл YAML.
+
+2.7 Напишите метод, который читает read_from_YAML,
+который читает несколько отделов из YAML файла и возвращает массив объектов класса Department.
+
+2.8 Прочитать массив объектов, вывести на экран, добавить еще один отдел,
+вывести результат на экран, записать измененный массив в тот же файл.
+
+5.1 В класс Department добавьте поле Post_list. Обновите конструктор.
 
 5.2 Напишите методы:
 
@@ -59,6 +79,9 @@
 # ПОДЪЁМ ИСКЛЮЧЕНИЙ СНИЗУ-ВВЕРХ НУЖЕН ДЛЯ ТОГО,
 # ЧТОБЫ БЫЛО ВИДНО ЧТО В ДАННОМ МЕТОДЕ МОЖЕТ ВОЗНИКНУТЬ ОШИБКА
 
+# CLONE, NEW И ПРОЧЕЕ НУЖНО ДЛЯ ТОГО,
+# ЧТОБЫ НЕ БЫЛО ДОСТУПА К ПЕРЕМЕННЫМ КЛАССА ИЗВНЕ
+
 require_relative "Post_list.rb"
 
 class Department
@@ -68,30 +91,88 @@ class Department
   def initialize(name, phone_number, duties = [], posts = Post_list.new)
     @name = name.clone
 
+    @duties = []
+    @marking_duty_index = -1
+
     begin
       @phone_number = self.phone_number=(phone_number.clone)
+      duties.each { |duty| add_duty(duty)}
+      @posts = posts.get_post_list
     rescue ArgumentError => error
       raise error
     end
+  end
 
-    @duties = []
-    duties.each { |duty| add_duty(duty)}
-    @marking_duty_index = -1
+  def Department.txt(file_name_or_content, is_file_name)
+    content = file_name_or_content
 
-    @posts = posts.get_post_list
+    if is_file_name
+      begin
+        File.open(file_name_or_content, "r:UTF-8") { |file| content = file.read }
+      rescue
+        raise IOError, "The file \"#{file_name_or_content}\" can't be opened"
+      end
+    end
+
+    department_info = content.split("\n\n")
+
+    begin
+      next_index = 0
+      next_info = department_info[next_index].split("\n")
+
+      name = next_info[0]
+      phone_number = next_info[1]
+
+      duties = []
+      posts = ""
+
+      next_index = 1
+      if next_index < department_info.size
+        next_info = department_info[next_index].split("\n")
+
+        if next_info[0] != name
+          duties = next_info
+          next_index += 1
+        end
+
+        if next_index < department_info.size
+          next_info = department_info.slice(next_index..department_info.size - 1)
+          next_info.each { |post| posts += post + "\n\n"}
+          posts.rstrip
+        end
+      end
+    rescue
+      raise IOError, "Incorrect Department TXT-format"
+    end
+
+    new(name, phone_number, duties, Post_list.txt(posts, false))
+  end
+
+  def Department.yml(file_name_or_content, is_file_name)
+    data = file_name_or_content
+
+    if is_file_name
+      begin
+        data = YAML.load(File.open(file_name_or_content))
+      rescue
+        raise IOError, "The file \"#{file_name_or_content}\" can't be opened"
+      end
+    end
+
+    begin
+      name = data[:name]
+      phone_number = data[:phone_number]
+      duties = data[:duties]
+      posts = Post_list.yml(data[:posts], false)
+    rescue
+      raise IOError, "Incorrect Department YML-format"
+    end
+
+    return new(name, phone_number, duties, posts)
   end
 
   def get_department
-    new_department = Department.new(@name, @phone_number, @duties, @posts)
-
-    begin
-      new_department.mark_duty(@marking_duty_index)
-      new_department.mark_post(@posts.marking_post_index)
-    rescue ArgumentError
-      #ignored
-    end
-
-    return new_department
+    return Department.new(@name, @phone_number, @duties, @posts)
   end
 
   def name
@@ -118,6 +199,22 @@ class Department
 
   def marking_post_index
     return @posts.marking_post_index
+  end
+
+  def to_s
+    result = "Отдел: #{@name}\n" + "Номер: #{@phone_number}\n" +
+      (@duties.empty? ? "": "\n" + get_duties_to_s + "\n") +
+      (@posts.empty? ? "": "\n" + @posts.to_s)
+
+    return result.rstrip
+  end
+
+  def get_post_list
+    return @posts.get_post_list
+  end
+
+  def get_free_post_list
+    return @posts.get_free_post_list
   end
 
   def add_post(post)
@@ -148,14 +245,6 @@ class Department
     end
   end
 
-  def get_post_list
-    return @posts.get_post_list
-  end
-
-  def get_free_post_list
-    return @posts.get_free_post_list
-  end
-
   def replace_post(post)
     if post.department_name == @name
       begin
@@ -166,6 +255,10 @@ class Department
     else
       raise ArgumentError, "The names of departments \"#{post.department_name}\" and \"#{name}\" don't match"
     end
+  end
+
+  def get_duties
+    return @duties.map { |duty| duty.clone }
   end
 
   def add_duty(duty_text)
@@ -231,52 +324,44 @@ class Department
         text += "#{index + 1}. #{@duties[index]};\n"
       }
     end
-    return text
+    return text.rstrip
   end
 
   def print_duties
     puts get_duties_to_s
   end
 
-  def to_s
-    result = "Отдел: #{@name}\n" + "Номер: #{@phone_number}\n" +
-      ((get_duties_to_s == "")? "": "\n" + get_duties_to_s) + "\n" + @posts.to_s
+  def department_to_txt
+    output = @name + "\n" + @phone_number + "\n\n"
 
-    return result
+    @duties.each { |duty| output += duty + "\n" }
+    unless @duties.empty?
+      output += "\n"
+    end
+
+    output += @posts.post_list_to_txt
+
+    return output.rstrip
+  end
+
+  def write_to_txt(file_name)
+    File.open(file_name, "w:UTF-8") { |file| file.print(department_to_txt) }
+  end
+
+  def write_to_yml(file_name)
+    File.open(file_name, "w:UTF-8") do |file|
+      YAML.dump(to_hash, file)
+    end
+  end
+
+  def to_hash
+    return {
+      :name => @name,
+      :phone_number => @phone_number,
+      :duties => @duties,
+      :posts => @posts.to_hash
+    }
   end
 
   private :is_index_correct?, :get_duties_to_s
-end
-
-begin
-  sales = Department.new("Продажи", "+7 (996) 683-72-88")
-
-  sales.add_duty("Предлагать покупателям новые продукты")
-  sales.add_duty("Проводить встречи с потенциальными клиентами")
-  sales.add_duty("Устраивать рекламные акции")
-
-  post1 = Post.new("Продажи", "Младший менеджер", 45000, false)
-  post2 = Post.new("Продажи", "Старший менеджер", 60000, true)
-  post3 = Post.new("Продажи", "Директор по развитию", 80000, false)
-  post4 = Post.new("Продажи", "Руководитель отдела продаж", 100000, true)
-
-  sales.add_post(post1)
-  sales.add_post(post2)
-  sales.add_post(post3)
-  sales.add_post(post4)
-
-  post1.post_name = ""
-
-  sales.mark_duty(1)
-  a = sales.get_marking_duty_text
-  a[0] = "r"
-  # sales.delete_post
-  #
-  # sales.mark_post(3)
-  # sales.replace_post(post1)
-
-  # puts sales.get_all_posts
-  sales.print_duties
-rescue ArgumentError => error
-  puts "Error: " + error.message + "."
 end

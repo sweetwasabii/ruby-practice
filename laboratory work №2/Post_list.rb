@@ -3,37 +3,66 @@
 require_relative "Post.rb"
 
 class Post_list
-  # поля: post_list, marking_department_index
+  # поля: post_list, marking_post_index
 
   def initialize(post_list = [])
     @post_list = []
-    post_list.each { |post| add_post(post)}
-
     @marking_post_index = -1
+
+    begin
+      post_list.each { |post| add_post(post)}
+    rescue ArgumentError => error
+      raise error
+    end
   end
 
-  def size
-    return @post_list.size
+  def Post_list.txt(file_name_or_content, is_file_name)
+    content = file_name_or_content
+
+    if is_file_name
+      begin
+        File.open(file_name_or_content, "r:UTF-8") { |file| content = file.read }
+      rescue
+        raise IOError, "The file \"#{file_name_or_content}\" can't be opened"
+      end
+    end
+
+    post_list = []
+
+    begin
+      content.split("\n\n").each { |post| post_list.push(Post.txt(post, false))}
+    rescue
+      raise IOError, "Incorrect Post_list TXT-format"
+    end
+
+    return new(post_list)
   end
 
-  def empty?
-    return size == 0
-  end
+  def Post_list.yml(file_name_or_content, is_file_name)
+    data = file_name_or_content
 
-  def marking_post_index
-    return @marking_post_index + 1
+    if is_file_name
+      begin
+        data = YAML.load(File.open(file_name_or_content))
+      rescue IOError
+        raise IOError, "The file \"#{file_name_or_content}\" can't be opened"
+      end
+    end
+
+    post_list = []
+    data.each do |post|
+      begin
+        post_list.push(Post.yml(post, false))
+      rescue IOError
+        raise IOError, "Incorrect Post_list YML-format"
+      end
+    end
+
+    return new(post_list)
   end
 
   def get_post_list
-    new_post_list = Post_list.new(@post_list)
-
-    begin
-      new_post_list.mark_post(@marking_post_index)
-    rescue
-      # ignored
-    end
-
-    return new_post_list
+    return Post_list.new(@post_list)
   end
 
   def get_free_post_list
@@ -46,32 +75,29 @@ class Post_list
     return free_post_list
   end
 
-  # def Post_list.txt(file_name)
-  #   file = File.new(file_name, "r:UTF-8")
-  #   content = file.read
-  #
-  #   posts = []
-  #   content.strip.split("\n\n").each { |result|
-  #     post = result.split("\n")
-  #     department = post[0]
-  #     name = post[1]
-  #     salary = post[2]
-  #     is_free = (post[3] == "Да")? true: false
-  #
-  #     posts.push(Post.new(department, name, salary, is_free))
-  #   }
-  #
-  #   file.close
-  #   new(*posts)
-  # end
-  #
-  # def Post_list.yaml(file_name)
-  #   file = File.new(file_name, "r:UTF-8")
-  #   content = file.read
-  #
-  #   file.close
-  #   new(*YAML.load(content))
-  # end
+  def marking_post_index
+    return @marking_post_index + 1
+  end
+
+  def size
+    return @post_list.size
+  end
+
+  def empty?
+    return size == 0
+  end
+
+  def sort!
+    @post_list.sort! { |post1, post2| post1.department_name <=> post2.department_name }
+  end
+
+  def to_s
+    s = "Вакансии:\n\n"
+    @post_list.each_index {|i|
+      s += "№#{i + 1} #{@post_list[i]}\n"
+    }
+    return s.rstrip
+  end
 
   def add_post(new_post)
     @post_list.each { |post|
@@ -128,62 +154,29 @@ class Post_list
     end
   end
 
-  # def write_to_YAML(file_name)
-  #   file = File.new(file_name, "w:UTF-8")
-  #   file.print(@notes_list.to_yaml)
-  #
-  #   file.close
-  # end
-  #
-  # def write_to_txt(file_name)
-  #   file = File.new(file_name, "w:UTF-8")
-  #   @notes_list.each { |post|
-  #     output = post.department + "\n" +
-  #       post.name + "\n" +
-  #       post.salary + "\n" +
-  #       ((post.is_free)? "Дa": "Нет") + "\n"
-  #     file.print("#{output}\n")
-  #   }
-  #
-  #   file.close
-  # end
+  def post_list_to_txt
+    output = ""
+    @post_list.each { |post| output += post.post_to_txt + "\n\n" }
 
-  def sort!
-    @post_list.sort! { |post1, post2| post1.department_name <=> post2.department_name }
+    return output.rstrip
   end
 
-  def to_s
-    s = ""
-    @post_list.each_index {|i|
-      s += "№#{i + 1} #{@post_list[i]}\n"
-    }
-    return s
+  def write_to_txt(file_name)
+    File.open(file_name, "w:UTF-8") { |file| file.print(post_list_to_txt) }
+  end
+
+  def write_to_yml(file_name)
+    File.open(file_name, "w:UTF-8") do |file|
+      YAML.dump(to_hash, file)
+    end
+  end
+
+  def to_hash
+    post_list_hash = []
+    @post_list.each { |post| post_list_hash.push(post.to_hash) }
+
+    return post_list_hash
   end
 
   private :is_index_correct?
-end
-
-begin
-  # post1 = Post.new("Продажи", "Младший менеджер", 55000, false)
-  # post2 = Post.new("Продажи", "Старший менеджер", 80000, true)
-  # post3 = Post.new("Бухгатерия", "Бухгалтер", 40000, false)
-  # post4 = Post.new("Разработка", "Разработчик", 100000, true)
-  #
-  # posts = Post_list.new
-  # posts.add_post(post1)
-  # posts.add_post(post2)
-  # posts.add_post(post3)
-  # posts.add_post(post4)
-  #
-  # # posts.mark_post(2)
-  # # posts.delete_post
-  # #
-  # # posts.mark_post(3)
-  # # posts.replace_post(post2)
-  #
-  # # posts.sort
-  # # puts posts.get_free_posts
-  # # puts posts
-rescue ArgumentError => error
-  puts "Error: " + error.message + "."
 end

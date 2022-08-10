@@ -29,46 +29,75 @@ class Department_list
 
   def initialize(department_list = [])
     @department_list = []
-    department_list.each { |department| add_department(department)}
-
     @marking_department_index = -1
-  end
-
-  def get_department_list
-    new_department_list = Department_list.new(@department_list)
 
     begin
-      new_department_list.mark_department(@marking_department_index)
-    rescue
-      # ignored
+      department_list.each { |department| add_department(department)}
+    rescue ArgumentError => error
+      raise error
     end
   end
 
-  # def Department_list.txt(file_name)
-  #   file = File.new(file_name, "r:UTF-8")
-  #   content = file.read
-  #
-  #   departments = []
-  #   content.strip.split("\n\n").each { |result|
-  #     department = result.split("\n")
-  #     name = department[0]
-  #     phone_number = department[1]
-  #     duties = department.slice(2..department.size - 1)
-  #
-  #     departments.push(Department.new(name, phone_number, *duties))
-  #   }
-  #
-  #   file.close
-  #   new(*departments)
-  # end
+  def Department_list.txt(file_name_or_content, is_file_name)
+    content = file_name_or_content
 
-  # def Department_list.yaml(file_name)
-  #   file = File.new(file_name, "r:UTF-8")
-  #   content = file.read
-  #
-  #   file.close
-  #   new(*YAML.load(content))
-  # end
+    if is_file_name
+      begin
+        File.open(file_name_or_content, "r:UTF-8") { |file| content = file.read }
+      rescue
+        raise IOError, "The file \"#{file_name_or_content}\" can't be opened"
+      end
+    end
+
+    department_list = []
+
+    begin
+      content.split("\n\n\n").each { |department| department_list.push(Department.txt(department, false))}
+    rescue
+      raise IOError, "Incorrect Department_list TXT-format"
+    end
+
+    return new(department_list)
+  end
+
+  def Department_list.yml(file_name_or_content, is_file_name)
+    data = file_name_or_content
+
+    if is_file_name
+      begin
+        data = YAML.load(File.open(file_name_or_content))
+      rescue
+        raise IOError, "The file \"#{file_name_or_content}\" can't be opened"
+      end
+    end
+
+    department_list = []
+    data.each do |department|
+      begin
+        department_list.push(Department.yml(department, false))
+      rescue
+        raise IOError, "Incorrect Post_list YML-format"
+      end
+    end
+
+    return new(department_list)
+  end
+
+  def get_department_list
+    return Department_list.new(@department_list)
+  end
+
+  def sort!
+    @department_list.sort! { |department1, department2| department1.name <=> department2.name }
+  end
+
+  def to_s
+    s = ""
+    @department_list.each_index {|i|
+      s += "№#{i + 1} #{@department_list[i]}\n\n\n"
+    }
+    return s.rstrip
+  end
 
   def get_department_names
     return @department_list.map { |department| department.name}
@@ -123,67 +152,29 @@ class Department_list
     end
   end
 
-  # def write_to_YAML(file_name)
-  #   file = File.new(file_name, "w:UTF-8")
-  #   file.print(@notes_list.to_yaml)
-  #
-  #   file.close
-  # end
-  #
-  # def write_to_txt(file_name)
-  #   file = File.new(file_name, "w:UTF-8")
-  #   @notes_list.each { |department|
-  #     output = department.name + "\n" + department.phone_number + "\n"
-  #     department.duties.each { |duty| output += duty + "\n"}
-  #     file.print("#{output}\n")
-  #   }
-  #
-  #   file.close
-  # end
+  def department_list_to_txt
+    output = ""
+    @department_list.each { |department| output += department.department_to_txt + "\n\n\n"}
 
-  def sort!
-    @department_list.sort! { |department1, department2| department1.name <=> department2.name }
+    return output.rstrip
   end
 
-  def to_s
-    s = ""
-    @department_list.each_index {|i|
-      s += "№#{i + 1} #{@department_list[i]}\n"
-    }
-    return s
+  def write_to_txt(file_name)
+    File.open(file_name, "w:UTF-8") { |file| file.print(department_list_to_txt) }
+  end
+
+  def write_to_yml(file_name)
+    File.open(file_name, "w:UTF-8") do |file|
+      YAML.dump(to_hash, file)
+    end
+  end
+
+  def to_hash
+    department_list_hash = []
+    @department_list.each { |department| department_list_hash.push(department.to_hash) }
+
+    return department_list_hash
   end
 
   private :is_index_correct?, :get_department_names
-end
-
-begin
-  sales = Department.new("Продажи", "+7 (996) 683-72-88")
-  sales.add_duty("Предлагать покупателям новые продукты")
-  sales.add_duty("Проводить встречи с потенциальными клиентами")
-  sales.add_duty("Устраивать рекламные акции")
-
-  accounting = Department.new("Бухгалтерия", "+7 (999) 529-23-57")
-  accounting.add_duty("Подводить итоги в 19:00")
-  accounting.add_duty("Заносить данные о покупах")
-
-  development = Department.new("Разработка", "+7 (992) 453-69-95")
-  development.add_duty("Разрабатывать новые решение для улучшения производительности")
-  development.add_duty("Проводить тестирования новых решений")
-
-  departments = Department_list.new
-  departments.add_department(sales)
-  departments.add_department(accounting)
-
-  departments.mark_department(2)
-  # departments.replace_marking_department(development)
-  departments.add_department(development)
-
-  # puts departments.get_department.to_s
-
-  # departments.delete_department
-
-  departments.sort
-  puts departments.to_s
-rescue ArgumentError => error
-  puts "Error: " + error.message + "."
 end

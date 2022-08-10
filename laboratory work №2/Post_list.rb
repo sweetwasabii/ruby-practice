@@ -61,18 +61,18 @@ class Post_list
     return new(post_list)
   end
 
+  # 'клонирование' объекта
   def get_post_list
     return Post_list.new(@post_list)
   end
 
   def get_free_post_list
-    free_post_list = Post_list.new
-    @post_list.each do |post|
-      if post.is_free
-        free_post_list.add_post(post.get_post)
-      end
-    end
-    return free_post_list
+    return Post_list.new(
+      @post_list.select { |post| post.is_free}.map {|post| post.get_post})
+  end
+
+  def get_free_posts_size
+    return @post_list.count { |post| post.is_free}
   end
 
   def marking_post_index
@@ -97,6 +97,10 @@ class Post_list
       s += "№#{i + 1} #{@post_list[i]}\n"
     }
     return s.rstrip
+  end
+
+  def short_to_s
+    return "Свободные вакансии: #{get_free_posts_size}"
   end
 
   def add_post(new_post)

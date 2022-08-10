@@ -18,6 +18,9 @@ delete_note, удаляющий выбранную запись.
 
 3.5 Построить метод, сортирующий записи по названию.
 
+6.1 Реализуйте возможность сортировки отделов по количеству
+вакантных должностей, модифицируйте все необходимые классы, обоснуйте свой выбор.
+
 =end
 
 require "yaml"
@@ -83,18 +86,24 @@ class Department_list
     return new(department_list)
   end
 
+  # 'клонирование' объекта
   def get_department_list
     return Department_list.new(@department_list)
   end
 
-  def sort!
-    @department_list.sort! { |department1, department2| department1.name <=> department2.name }
+  # по умолчанию
+  def sort_by_name!
+    @department_list.sort_by! { |department| department.name }
+  end
+
+  def sort_by_free!
+    @department_list.sort_by! { |department| department.get_free_posts_size }.reverse!
   end
 
   def to_s
     s = ""
     @department_list.each_index {|i|
-      s += "№#{i + 1} #{@department_list[i]}\n\n\n"
+      s += "№#{i + 1} #{@department_list[i].short_to_s}\n\n"
     }
     return s.rstrip
   end

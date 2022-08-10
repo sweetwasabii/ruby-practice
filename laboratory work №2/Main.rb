@@ -5,6 +5,37 @@ require_relative "Post.rb"
 require_relative "Post_list.rb"
 
 begin
+  sales = Department.new("Продажи",
+                         "+7 (996) 683-72-88",
+                         ["Предлагать покупателям новые продукты",
+                          "Проводить встречи с потенциальными клиентами",
+                          "Устраивать рекламные акции"])
+
+  accounting = Department.new("Бухгалтерия",
+                              "+7 (999) 529-23-57",
+                              ["Подводить итоги в 19:00",
+                               "Заносить данные о покупах"])
+
+  development = Department.new("Разработка",
+                               "+7 (992) 453-69-95",
+                               ["Разрабатывать новые решение для улучшения производительности",
+                                "Проводить тестирования новых решений"])
+
+  post1 = Post.new("Продажи", "Младший менеджер", 55000, true)
+  post2 = Post.new("Продажи", "Старший менеджер", 80000, true)
+  post3 = Post.new("Бухгалтерия", "Бухгалтер", 40000, false)
+  post4 = Post.new("Разработка", "Разработчик", 100000, true)
+
+  sales.add_post(post1)
+  sales.add_post(post2)
+  accounting.add_post(post3)
+  development.add_post(post4)
+
+  departments = Department_list.new([sales, accounting, development])
+
+  departments.sort_by_free!
+
+  puts departments
   # sales = Department.new("Продажи",
   #                        "+7 (996) 683-72-88",
   #                        ["Предлагать покупателям новые продукты",

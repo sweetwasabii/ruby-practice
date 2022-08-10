@@ -171,6 +171,7 @@ class Department
     return new(name, phone_number, duties, posts)
   end
 
+  # 'клонирование' объекта
   def get_department
     return Department.new(@name, @phone_number, @duties, @posts)
   end
@@ -209,12 +210,21 @@ class Department
     return result.rstrip
   end
 
+  def short_to_s
+    return "Отдел: #{@name}\n" + "Номер: #{@phone_number}\n\n" +
+      (@duties.empty? ? "": get_duties_to_s + "\n\n") + @posts.short_to_s
+  end
+
   def get_post_list
     return @posts.get_post_list
   end
 
   def get_free_post_list
     return @posts.get_free_post_list
+  end
+
+  def get_free_posts_size
+    return @posts.get_free_posts_size
   end
 
   def add_post(post)

@@ -69,6 +69,7 @@ class Post
     return new(department_name, post_name, salary, is_free)
   end
 
+  # 'клонирование' объекта
   def get_post
     return Post.new(@department_name, @post_name, @salary, @is_free)
   end

@@ -5,7 +5,15 @@
   - Предлагать покупателям новые продукты
   - Проводить встречи с потенциальными клиентами
   - Устраивать рекламные акции
-  :posts: []
+  :posts:
+  - :department_name: Продажи
+    :post_name: Младший менеджер
+    :salary: 55000
+    :is_free: true
+  - :department_name: Продажи
+    :post_name: Старший менеджер
+    :salary: 80000
+    :is_free: true
 - :name: Бухгалтерия
   :phone_number: "+7 (999) 529-23-57"
   :duties:
@@ -25,4 +33,4 @@
   - :department_name: Разработка
     :post_name: Разработчик
     :salary: 100000
-    :is_free: false
+    :is_free: true

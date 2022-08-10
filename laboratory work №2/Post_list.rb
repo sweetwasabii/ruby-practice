@@ -1,5 +1,3 @@
-# 4.2 По аналогии с классом Department_list напишите класс Post_list.
-
 require_relative "Post.rb"
 
 class Post_list
@@ -88,7 +86,7 @@ class Post_list
   end
 
   def sort!
-    @post_list.sort! { |post1, post2| post1.department_name <=> post2.department_name }
+    @post_list.sort_by! { |post| post.department_name }
   end
 
   def to_s
@@ -176,10 +174,7 @@ class Post_list
   end
 
   def to_hash
-    post_list_hash = []
-    @post_list.each { |post| post_list_hash.push(post.to_hash) }
-
-    return post_list_hash
+    return @post_list.map { |post| post.to_hash }
   end
 
   private :is_index_correct?

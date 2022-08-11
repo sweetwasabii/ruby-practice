@@ -13,6 +13,18 @@ class Fixed_salary < Salary
   end
 end
 
+class Premium_salary < Fixed_salary
+  def initialize(fixed, premium)
+    super(fixed)
+
+    @premium = premium
+  end
+
+  def get_salary
+    return super + @premium
+  end
+end
+
 class Fined_salary < Fixed_salary
   def initialize(fixed, fine)
     super(fixed)
@@ -25,75 +37,14 @@ class Fined_salary < Fixed_salary
   end
 end
 
-class Ruble_salary < Fixed_salary
-  def initialize(fixed, additional_rubles)
-    super(fixed)
+class Premium_fined_salary < Fined_salary
+  def initialize(fixed, fine, premium)
+    super(fixed, fine)
 
-    @additional_rubles = additional_rubles
+    @premium = premium
   end
 
   def get_salary
-    return super + @additional_rubles
-  end
-end
-
-class Fined_ruble_salary < Ruble_salary
-  def initialize(fixed, additional_rubles, fine)
-    super(fixed, additional_rubles)
-
-    @fine = fine
-  end
-
-  def get_salary
-    return super - @fine
-  end
-end
-
-class Percent_salary < Fixed_salary
-  def initialize(fixed, additional_percent)
-    super(fixed)
-
-    @additional_percent = additional_percent
-  end
-
-  def get_salary
-    return (rand(10) % 2 == 0)?
-             super: super + (super * 0.001 * @additional_percent)
-  end
-end
-
-class Fined_percent_salary < Percent_salary
-  def initialize(fixed, additional_percent, fine)
-    super(fixed, additional_percent)
-
-    @fine = fine
-  end
-
-  def get_salary
-    return super - @fine
-  end
-end
-
-class Ruble_percent_salary < Percent_salary
-  def initialize(fixed, additional_rubles, additional_percent)
-    super(fixed, additional_percent)
-
-    @additional_rubles = additional_rubles
-  end
-
-  def get_salary
-    return super + @additional_rubles
-  end
-end
-
-class Fined_ruble_percent_salary < Ruble_percent_salary
-  def initialize(fixed, additional_rubles, additional_percent, fine)
-    super(fixed, additional_rubles, additional_percent)
-
-    @fine = fine
-  end
-
-  def get_salary
-    return super - @fine
+    return super + @premium
   end
 end

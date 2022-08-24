@@ -10,6 +10,14 @@ class Ruble_salary < Fixed_salary
   def get_salary
     return super + @additional_rubles
   end
+
+  def to_hash
+    salary_hash = super
+    salary_hash[:salary_class] = self.class.name
+    salary_hash[:additional_rubles] = @additional_rubles
+
+    return salary_hash
+  end
 end
 
 class Premium_ruble_salary < Ruble_salary
@@ -21,6 +29,14 @@ class Premium_ruble_salary < Ruble_salary
 
   def get_salary
     return super + @premium
+  end
+
+  def to_hash
+    salary_hash = super
+    salary_hash[:salary_class] = self.class.name
+    salary_hash[:premium] = @premium
+
+    return salary_hash
   end
 end
 
@@ -34,6 +50,14 @@ class Fined_ruble_salary < Ruble_salary
   def get_salary
     return super - @fine
   end
+
+  def to_hash
+    salary_hash = super
+    salary_hash[:salary_class] = self.class.name
+    salary_hash[:fine] = @fine
+
+    return salary_hash
+  end
 end
 
 class Premium_fined_ruble_salary < Fined_ruble_salary
@@ -45,5 +69,13 @@ class Premium_fined_ruble_salary < Fined_ruble_salary
 
   def get_salary
     return super + @premium
+  end
+
+  def to_hash
+    salary_hash = super
+    salary_hash[:salary_class] = self.class.name
+    salary_hash[:premium] = @premium
+
+    return salary_hash
   end
 end

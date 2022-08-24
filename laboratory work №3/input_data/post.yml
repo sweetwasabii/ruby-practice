@@ -1,0 +1,10 @@
+---
+:department_name: Продажи
+:post_name: Младший менеджер
+:salary:
+  :salary_class: Premium_fined_ruble_salary
+  :fixed: 1000
+  :additional_rubles: 1200
+  :fine: 300
+  :premium: 400
+:is_free: true
